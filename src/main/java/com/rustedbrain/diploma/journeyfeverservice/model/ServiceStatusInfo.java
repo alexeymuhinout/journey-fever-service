@@ -2,9 +2,12 @@ package com.rustedbrain.diploma.journeyfeverservice.model;
 
 public class ServiceStatusInfo {
 
-    private final long id;
-    private final Status status;
-    private final long timeMillis;
+    private long id;
+    private Status status;
+    private long timeMillis;
+
+    public ServiceStatusInfo() {
+    }
 
     public ServiceStatusInfo(long id, Status status, long timeMillis) {
         this.id = id;

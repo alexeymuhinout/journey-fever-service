@@ -27,5 +27,8 @@ public class ServiceController {
         return new GreetingServiceStatusInfo(counter.incrementAndGet(), Status.OK, System.currentTimeMillis(), String.format(GREETING_TEMPLATE, name));
     }
 
-
+    @RequestMapping(path = "/login", method = RequestMethod.POST)
+    public Boolean login(@RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
+        return !username.isEmpty() && !password.isEmpty();
+    }
 }
