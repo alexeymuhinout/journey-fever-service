@@ -1,7 +1,7 @@
 package com.rustedbrain.diploma.journeyfeverservice;
 
-import com.rustedbrain.diploma.journeyfeverservice.model.ServiceStatusInfo;
-import com.rustedbrain.diploma.journeyfeverservice.model.Status;
+import com.rustedbrain.diploma.journeyfeverservice.model.status.ServiceStatusInfo;
+import com.rustedbrain.diploma.journeyfeverservice.model.status.Status;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

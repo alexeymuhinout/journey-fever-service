@@ -1,8 +1,8 @@
 package com.rustedbrain.diploma.journeyfeverservice.controller;
 
-import com.rustedbrain.diploma.journeyfeverservice.model.GreetingServiceStatusInfo;
-import com.rustedbrain.diploma.journeyfeverservice.model.ServiceStatusInfo;
-import com.rustedbrain.diploma.journeyfeverservice.model.Status;
+import com.rustedbrain.diploma.journeyfeverservice.model.status.GreetingServiceStatusInfo;
+import com.rustedbrain.diploma.journeyfeverservice.model.status.ServiceStatusInfo;
+import com.rustedbrain.diploma.journeyfeverservice.model.status.Status;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;

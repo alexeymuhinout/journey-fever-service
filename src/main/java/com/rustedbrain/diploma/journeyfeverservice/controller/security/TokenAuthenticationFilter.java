@@ -17,14 +17,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class CustomTokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public final String HEADER_SECURITY_TOKEN = "My-Rest-AuthenticationToken";
     private AuthenticationManager authenticationManager;
 
     private CryptService cryptService; //service which can decrypt token
 
-    public CustomTokenAuthenticationFilter(String defaultFilterProcessesUrl, AuthenticationManager authenticationManager) {
+    public TokenAuthenticationFilter(String defaultFilterProcessesUrl, AuthenticationManager authenticationManager) {
         super(defaultFilterProcessesUrl);
         this.authenticationManager = authenticationManager;
         super.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(defaultFilterProcessesUrl));
@@ -56,7 +56,7 @@ public class CustomTokenAuthenticationFilter extends AbstractAuthenticationProce
     // This method makes some validation depend on your application logic
     private Authentication parseToken(String tokenString) {
         try {
-            String encryptedToken = cryptService.decrypt(tokenString);
+            String encryptedToken = CryptService.decrypt(tokenString);
             AuthenticationToken authenticationToken = new ObjectMapper().readValue(encryptedToken, AuthenticationToken.class);
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationToken.getUsername(), authenticationToken.getPassword()));

@@ -1,4 +1,4 @@
-package com.rustedbrain.diploma.journeyfeverservice.model;
+package com.rustedbrain.diploma.journeyfeverservice.model.status;
 
 public class ServiceStatusInfo {
 
