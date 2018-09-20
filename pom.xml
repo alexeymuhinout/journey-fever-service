@@ -57,6 +57,11 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-jaxrs</artifactId>
+            <version>1.5.20</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -105,6 +110,5 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
 
 </project>
