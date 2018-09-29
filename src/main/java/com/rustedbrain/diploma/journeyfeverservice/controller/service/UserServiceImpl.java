@@ -1,8 +1,8 @@
 package com.rustedbrain.diploma.journeyfeverservice.controller.service;
 
 import com.rustedbrain.diploma.journeyfeverservice.controller.repository.UserRepository;
-import com.rustedbrain.diploma.journeyfeverservice.model.persistence.Role;
-import com.rustedbrain.diploma.journeyfeverservice.model.persistence.User;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.Role;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;

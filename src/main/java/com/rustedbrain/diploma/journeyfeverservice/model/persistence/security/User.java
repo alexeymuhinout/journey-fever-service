@@ -1,6 +1,11 @@
-package com.rustedbrain.diploma.journeyfeverservice.model.persistence;
+package com.rustedbrain.diploma.journeyfeverservice.model.persistence.security;
+
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.DatabaseEntity;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.Comment;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.Travel;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "user", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = {"firstName", "lastName"})})
@@ -24,6 +29,27 @@ public class User extends DatabaseEntity {
     @Enumerated
     @Column(columnDefinition = "smallint")
     private Role role;
+
+    @OneToMany
+    private List<Comment> comments;
+    @ManyToMany
+    private List<Travel> travels;
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public List<Travel> getTravels() {
+        return travels;
+    }
+
+    public void setTravels(List<Travel> travels) {
+        this.travels = travels;
+    }
 
     public String getFirstName() {
         return firstName;

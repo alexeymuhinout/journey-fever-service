@@ -1,6 +1,6 @@
 package com.rustedbrain.diploma.journeyfeverservice.controller.repository;
 
-import com.rustedbrain.diploma.journeyfeverservice.model.persistence.User;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -7,7 +7,7 @@ import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.EditProfil
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.RegistrationRequest;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.UserDTO;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.status.ServiceInfo;
-import com.rustedbrain.diploma.journeyfeverservice.model.persistence.Role;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.Role;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,7 +27,7 @@ import java.util.Collections;
 @SpringBootTest(classes = TravelVisualizerRestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class LoginControllerTests {
 
-    private static final String DEFAULT_SERVER_URL = "http://192.168.154.102:8080";
+    private static final String DEFAULT_SERVER_URL = "http://127.0.0.1:8080";
     private static final String GREETING_URL = DEFAULT_SERVER_URL + "/travel/status";
     private static final String REGISTER_URL = DEFAULT_SERVER_URL + "/login/register";
     private static final String DEREGISTER_URL = DEFAULT_SERVER_URL + "/login/deregister";

@@ -1,6 +1,6 @@
 package com.rustedbrain.diploma.journeyfeverservice.model.dto.security;
 
-import com.rustedbrain.diploma.journeyfeverservice.model.persistence.Role;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.Role;
 
 import java.io.Serializable;
 

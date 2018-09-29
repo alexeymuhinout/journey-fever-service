@@ -7,8 +7,8 @@ import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.Authentica
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.EditProfileRequest;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.RegistrationRequest;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.UserDTO;
-import com.rustedbrain.diploma.journeyfeverservice.model.persistence.Role;
-import com.rustedbrain.diploma.journeyfeverservice.model.persistence.User;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.Role;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.User;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
