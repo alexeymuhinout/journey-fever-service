@@ -3,16 +3,18 @@ package com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.DatabaseEntity;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.User;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "comment")
 public class Comment extends DatabaseEntity {
 
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
-    @Column(name = "text")
+    @Column(name = "text", length = 512)
     private String text;
-    private TravelPoint point;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Showplace showplace;
 
     public User getUser() {
         return user;
@@ -30,12 +32,12 @@ public class Comment extends DatabaseEntity {
         this.text = text;
     }
 
-    public TravelPoint getPoint() {
-        return point;
+    public Showplace getShowplace() {
+        return showplace;
     }
 
-    public void setPoint(TravelPoint point) {
-        this.point = point;
+    public void setShowplace(Showplace showplace) {
+        this.showplace = showplace;
     }
 
     @Override
@@ -43,7 +45,7 @@ public class Comment extends DatabaseEntity {
         return "Comment{" +
                 "user=" + user +
                 ", text='" + text + '\'' +
-                ", point=" + point +
+                ", showplace=" + showplace +
                 '}';
     }
 }

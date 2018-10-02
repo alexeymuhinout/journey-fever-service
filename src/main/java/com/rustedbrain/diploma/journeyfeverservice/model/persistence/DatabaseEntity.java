@@ -1,10 +1,11 @@
 package com.rustedbrain.diploma.journeyfeverservice.model.persistence;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Date;
 
 @MappedSuperclass
-public abstract class DatabaseEntity {
+public abstract class DatabaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

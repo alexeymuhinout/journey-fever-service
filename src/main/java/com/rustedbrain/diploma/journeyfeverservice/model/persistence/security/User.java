@@ -11,29 +11,42 @@ import java.util.List;
 @Table(name = "user", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = {"firstName", "lastName"})})
 public class User extends DatabaseEntity {
 
-    @Column(name = "firstName", length = 75)
+    @Column(name = "firstName", length = 64)
     private String firstName;
 
-    @Column(name = "lastName", length = 80)
+    @Column(name = "lastName", length = 64)
     private String lastName;
 
-    @Column(name = "username", unique = true, length = 65)
+    @Column(name = "username", unique = true, length = 64)
     private String username;
 
     @Column(name = "password", length = 64)
     private String password;
 
-    @Column(name = "email", unique = true, length = 115)
+    @Column(name = "email", unique = true, length = 128)
     private String email;
 
     @Enumerated
-    @Column(columnDefinition = "smallint")
+    @Column(columnDefinition = "smallint", nullable = false)
     private Role role;
 
-    @OneToMany
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Comment> comments;
-    @ManyToMany
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Travel> travels;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = javax.persistence.CascadeType.ALL)
+    @JoinTable(name = "userTravel", joinColumns = @JoinColumn(name = "userId"), inverseJoinColumns = @JoinColumn(name = "travelId"))
+    private List<Travel> sharedTravels;
+
+    public List<Travel> getSharedTravels() {
+        return sharedTravels;
+    }
+
+    public void setSharedTravels(List<Travel> sharedTravels) {
+        this.sharedTravels = sharedTravels;
+    }
 
     public List<Comment> getComments() {
         return comments;

@@ -11,19 +11,33 @@ import java.util.List;
         @UniqueConstraint(columnNames = "name")})
 public class Travel extends DatabaseEntity {
 
-    @ManyToMany
-    @JoinTable(name = "travelUser", joinColumns = @JoinColumn(name = "travelId"), inverseJoinColumns = @JoinColumn(name = "userId"))
-    private List<User> users;
-    @Column(name = "name")
-    private String name;
-    private List<TravelPoint> travelPoints;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
-    public List<User> getUsers() {
-        return users;
+    @Column(name = "name", length = 256)
+    private String name;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL)
+    @JoinTable(name = "travelShowplace", joinColumns = @JoinColumn(name = "travelId"), inverseJoinColumns = @JoinColumn(name = "showplaceId"))
+    private List<Showplace> showplaces;
+
+    @ManyToMany(mappedBy = "sharedTravels", fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<User> sharedToUsers;
+
+    public List<User> getSharedToUsers() {
+        return sharedToUsers;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public void setSharedToUsers(List<User> sharedToUsers) {
+        this.sharedToUsers = sharedToUsers;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getName() {
@@ -34,20 +48,21 @@ public class Travel extends DatabaseEntity {
         this.name = name;
     }
 
-    public List<TravelPoint> getTravelPoints() {
-        return travelPoints;
+    public List<Showplace> getShowplaces() {
+        return showplaces;
     }
 
-    public void setTravelPoints(List<TravelPoint> travelPoints) {
-        this.travelPoints = travelPoints;
+    public void setShowplaces(List<Showplace> showplaces) {
+        this.showplaces = showplaces;
     }
 
     @Override
     public String toString() {
         return "Travel{" +
-                "users=" + users +
+                "user=" + user +
                 ", name='" + name + '\'' +
-                ", travelPoints=" + travelPoints +
-                '}';
+                ", showplaces=" + showplaces +
+                ", sharedToUsers=" + sharedToUsers +
+                "} " + super.toString();
     }
 }
