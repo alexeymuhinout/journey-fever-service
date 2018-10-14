@@ -2,17 +2,25 @@ package com.rustedbrain.diploma.journeyfeverservice.controller;
 
 import com.rustedbrain.diploma.journeyfeverservice.controller.security.util.Constants;
 import com.rustedbrain.diploma.journeyfeverservice.controller.service.TravelVisualizerService;
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.AuthenticationRequest;
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.UserDTO;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.status.GreetingServiceInfo;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.status.ServiceInfo;
+import com.rustedbrain.diploma.journeyfeverservice.model.dto.travel.PlaceMapDTO;
+import com.rustedbrain.diploma.journeyfeverservice.model.dto.travel.PlaceMapDTOList;
+import com.rustedbrain.diploma.journeyfeverservice.model.dto.travel.request.AddPlaceRequest;
+import com.rustedbrain.diploma.journeyfeverservice.model.dto.travel.request.GetPlacesRequest;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.Place;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.PlaceType;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -39,27 +47,42 @@ public class TravelVisualizerController {
 
     @RequestMapping(value = "/place/add", method = {RequestMethod.POST})
     @ApiOperation(value = "add place")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Success", response = UserDTO.class),
-            @ApiResponse(code = 403, message = Constants.FORBIDDEN),
-            @ApiResponse(code = 422, message = Constants.USER_NOT_FOUND),
-            @ApiResponse(code = 417, message = Constants.EXCEPTION_FAILED)})
-    public ResponseEntity<UserDTO> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
-//        try {
-//            String username = authenticationRequest.getUsername();
-//            String password = authenticationRequest.getPassword();
-//
-//            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
-//            Authentication authentication = this.authenticationManager.authenticate(token);
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-//            UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(username);
-//
-//            List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::toString).collect(Collectors.toList());
-//            return new ResponseEntity<>(new UserDTO(userDetails.getUsername(), roles,
-//                    TokenUtil.createToken(userDetails), HttpStatus.OK), HttpStatus.OK);
-//        } catch (BadCredentialsException bce) {
-//            return new ResponseEntity<>(new UserDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
-//        } catch (Exception e) {
-        return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-        // }
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Success", response = PlaceMapDTO.class),
+            @ApiResponse(code = 406, message = Constants.NOT_ACCEPTABLE),
+            @ApiResponse(code = 400, message = Constants.BAD_REQUEST)})
+    public ResponseEntity<PlaceMapDTO> addPlace(@RequestBody AddPlaceRequest addPlaceRequest) {
+        PlaceType placeType = addPlaceRequest.getPlaceType();
+        String name = addPlaceRequest.getName();
+        String description = addPlaceRequest.getDescription();
+        float rating = addPlaceRequest.getRating();
+        double lat = addPlaceRequest.getLatitude();
+        double lng = addPlaceRequest.getLongitude();
+        List<byte[]> photoList = addPlaceRequest.getPhotoList();
+
+        try {
+            Place createdPlace = controller.addPlace(placeType, name, description, rating, lat, lng, photoList);
+            return new ResponseEntity<>(new PlaceMapDTO(HttpStatus.OK, createdPlace), HttpStatus.OK);
+        } catch (DataIntegrityViolationException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/place/get/bounds", method = {RequestMethod.POST})
+    @ApiOperation(value = "get places")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Success", response = PlaceMapDTO.class),
+            @ApiResponse(code = 406, message = Constants.NOT_ACCEPTABLE),
+            @ApiResponse(code = 400, message = Constants.BAD_REQUEST)})
+    public ResponseEntity<PlaceMapDTOList> getPlaces(@RequestBody GetPlacesRequest getPlacesRequest) {
+        try {
+            List<Place> places = controller.getPlaces(getPlacesRequest.getLatLngBoundsDTO());
+            List<PlaceMapDTO> placeMapDTOList = places.stream().map(PlaceMapDTO::new).collect(Collectors.toList());
+            return new ResponseEntity<>(new PlaceMapDTOList(HttpStatus.OK, placeMapDTOList), HttpStatus.OK);
+        } catch (DataIntegrityViolationException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

@@ -69,8 +69,8 @@ public class LoginController {
             UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(user.getUsername());
 
             List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::toString).collect(Collectors.toList());
-            return new ResponseEntity<>(new UserDTO(userDetails.getUsername(), roles,
-                    TokenUtil.createToken(userDetails), HttpStatus.OK), HttpStatus.OK);
+            return new ResponseEntity<>(new UserDTO(HttpStatus.OK, userDetails.getUsername(), roles,
+                    TokenUtil.createToken(userDetails)), HttpStatus.OK);
         } catch (IllegalArgumentException ex) {
             return new ResponseEntity<>(new UserDTO(), HttpStatus.NOT_ACCEPTABLE);
         } catch (DataIntegrityViolationException ve) {
@@ -99,8 +99,8 @@ public class LoginController {
             UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(editedUser.getUsername());
 
             List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::toString).collect(Collectors.toList());
-            return new ResponseEntity<>(new UserDTO(userDetails.getUsername(), roles,
-                    TokenUtil.createToken(userDetails), HttpStatus.OK), HttpStatus.OK);
+            return new ResponseEntity<>(new UserDTO(HttpStatus.OK, userDetails.getUsername(), roles,
+                    TokenUtil.createToken(userDetails)), HttpStatus.OK);
         } catch (IllegalArgumentException ex) {
             return new ResponseEntity<>(new UserDTO(), HttpStatus.NOT_ACCEPTABLE);
         } catch (Exception e) {
@@ -141,8 +141,8 @@ public class LoginController {
             UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(username);
 
             List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::toString).collect(Collectors.toList());
-            return new ResponseEntity<>(new UserDTO(userDetails.getUsername(), roles,
-                    TokenUtil.createToken(userDetails), HttpStatus.OK), HttpStatus.OK);
+            return new ResponseEntity<>(new UserDTO(HttpStatus.OK, userDetails.getUsername(), roles,
+                    TokenUtil.createToken(userDetails)), HttpStatus.OK);
         } catch (BadCredentialsException bce) {
             return new ResponseEntity<>(new UserDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
         } catch (Exception e) {

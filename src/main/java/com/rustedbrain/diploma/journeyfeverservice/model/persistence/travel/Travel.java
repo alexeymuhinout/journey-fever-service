@@ -7,8 +7,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "travel", schema = "public", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "name")})
+@Table(name = "travel", schema = "public")
 public class Travel extends DatabaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -18,8 +17,8 @@ public class Travel extends DatabaseEntity {
     private String name;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL)
-    @JoinTable(name = "travelShowplace", joinColumns = @JoinColumn(name = "travelId"), inverseJoinColumns = @JoinColumn(name = "showplaceId"))
-    private List<Showplace> showplaces;
+    @JoinTable(name = "travelPlace", joinColumns = @JoinColumn(name = "travelId"), inverseJoinColumns = @JoinColumn(name = "placeId"))
+    private List<Place> places;
 
     @ManyToMany(mappedBy = "sharedTravels", fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     private List<User> sharedToUsers;
@@ -48,12 +47,29 @@ public class Travel extends DatabaseEntity {
         this.name = name;
     }
 
-    public List<Showplace> getShowplaces() {
-        return showplaces;
+    public List<Place> getPlaces() {
+        return places;
     }
 
-    public void setShowplaces(List<Showplace> showplaces) {
-        this.showplaces = showplaces;
+    public void setPlaces(List<Place> places) {
+        this.places = places;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Travel travel = (Travel) o;
+
+        return user.equals(travel.user) && name.equals(travel.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = user.hashCode();
+        result = 31 * result + name.hashCode();
+        return result;
     }
 
     @Override
@@ -61,7 +77,7 @@ public class Travel extends DatabaseEntity {
         return "Travel{" +
                 "user=" + user +
                 ", name='" + name + '\'' +
-                ", showplaces=" + showplaces +
+                ", places=" + places +
                 ", sharedToUsers=" + sharedToUsers +
                 "} " + super.toString();
     }

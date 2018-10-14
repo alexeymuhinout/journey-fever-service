@@ -13,4 +13,6 @@ public class Constants {
     public final static String USER_PROFILE_NOT_UPDATED = "User profile not updated";
 
     public static final String CONFLICT = "User with same login or email already registered";
+    public static final String NOT_ACCEPTABLE = "Entity with this data already presented in the database";
+    public static final String BAD_REQUEST = "Entity with this data not alowed to store in the database";
 }

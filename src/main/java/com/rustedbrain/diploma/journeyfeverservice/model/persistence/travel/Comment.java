@@ -14,7 +14,7 @@ public class Comment extends DatabaseEntity {
     @Column(name = "text", length = 512)
     private String text;
     @ManyToOne(fetch = FetchType.LAZY)
-    private Showplace showplace;
+    private Place place;
 
     public User getUser() {
         return user;
@@ -32,12 +32,30 @@ public class Comment extends DatabaseEntity {
         this.text = text;
     }
 
-    public Showplace getShowplace() {
-        return showplace;
+    public Place getPlace() {
+        return place;
     }
 
-    public void setShowplace(Showplace showplace) {
-        this.showplace = showplace;
+    public void setPlace(Place place) {
+        this.place = place;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Comment comment = (Comment) o;
+
+        return user.equals(comment.user) && text.equals(comment.text) && place.equals(comment.place);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = user.hashCode();
+        result = 31 * result + text.hashCode();
+        result = 31 * result + place.hashCode();
+        return result;
     }
 
     @Override
@@ -45,7 +63,7 @@ public class Comment extends DatabaseEntity {
         return "Comment{" +
                 "user=" + user +
                 ", text='" + text + '\'' +
-                ", showplace=" + showplace +
+                ", place=" + place +
                 '}';
     }
 }

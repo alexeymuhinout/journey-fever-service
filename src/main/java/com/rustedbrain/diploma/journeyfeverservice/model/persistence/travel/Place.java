@@ -3,13 +3,16 @@ package com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.DatabaseEntity;
 
 import javax.persistence.*;
-import java.sql.Blob;
 import java.util.List;
 
 @Entity
-@Table(name = "showplace", schema = "public", uniqueConstraints = {
+@Table(name = "place", schema = "public", uniqueConstraints = {
         @UniqueConstraint(columnNames = "name")})
-public class Showplace extends DatabaseEntity {
+public class Place extends DatabaseEntity {
+
+    @Enumerated
+    @Column(columnDefinition = "smallint", nullable = false)
+    private PlaceType placeType;
 
     @Column(name = "name", length = 128)
     private String name;
@@ -17,20 +20,39 @@ public class Showplace extends DatabaseEntity {
     @Column(name = "description", length = 1024)
     private String description;
 
+    @Column(name = "rating")
+    private float rating;
+
     @Column(name = "longitude")
     private double longitude;
 
     @Column(name = "latitude")
     private double latitude;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<Blob> photos;
+    @OneToMany(mappedBy = "place", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<PlacePhoto> photos;
 
-    @ManyToMany(mappedBy = "showplaces", cascade = {CascadeType.ALL})
+    @ManyToMany(mappedBy = "places", cascade = {CascadeType.ALL})
     private List<Travel> travels;
 
-    @OneToMany(mappedBy = "showplace", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "place", fetch = FetchType.LAZY)
     private List<Comment> comments;
+
+    public PlaceType getPlaceType() {
+        return placeType;
+    }
+
+    public void setPlaceType(PlaceType placeType) {
+        this.placeType = placeType;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
 
     public List<Travel> getTravels() {
         return travels;
@@ -48,11 +70,11 @@ public class Showplace extends DatabaseEntity {
         this.comments = comments;
     }
 
-    public List<Blob> getPhotos() {
+    public List<PlacePhoto> getPhotos() {
         return photos;
     }
 
-    public void setPhotos(List<Blob> photos) {
+    public void setPhotos(List<PlacePhoto> photos) {
         this.photos = photos;
     }
 
@@ -89,8 +111,30 @@ public class Showplace extends DatabaseEntity {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Place place = (Place) o;
+
+        return Double.compare(place.longitude, longitude) == 0 && Double.compare(place.latitude, latitude) == 0 && name.equals(place.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = name.hashCode();
+        temp = Double.doubleToLongBits(longitude);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(latitude);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
     public String toString() {
-        return "Showplace{" +
+        return "Place{" +
                 "name='" + name + '\'' +
                 ", longitude=" + longitude +
                 ", latitude=" + latitude +
