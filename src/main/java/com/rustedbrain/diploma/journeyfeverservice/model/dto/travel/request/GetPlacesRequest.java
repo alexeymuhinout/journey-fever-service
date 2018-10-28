@@ -20,4 +20,5 @@ public class GetPlacesRequest {
     public void setLatLngBoundsDTO(LatLngBoundsDTO latLngBoundsDTO) {
         this.latLngBoundsDTO = latLngBoundsDTO;
     }
+
 }

@@ -5,7 +5,7 @@
 
     <groupId>com.rustedbrain.diploma</groupId>
     <artifactId>journey-fever-service</artifactId>
-    <version>0.2</version>
+    <version>0.3</version>
     <packaging>jar</packaging>
 
     <name>journey-fever-service</name>
@@ -25,6 +25,8 @@
         <spring.boot.version>2.1.0.BUILD-SNAPSHOT</spring.boot.version>
         <spring.security.version>5.1.0.BUILD-SNAPSHOT</spring.security.version>
         <h2.version>1.4.197</h2.version>
+        <swagger.version>1.5.21</swagger.version>
+        <json-path.version>2.4.0</json-path.version>
     </properties>
 
     <dependencies>
@@ -50,9 +52,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <version>${spring.security.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>2.4.0</version>
+            <version>${json-path.version}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -61,15 +69,9 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <version>${spring.security.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jaxrs</artifactId>
-            <version>1.5.20</version>
+            <version>${swagger.version}</version>
         </dependency>
     </dependencies>
 
@@ -84,6 +86,11 @@
     </build>
 
     <repositories>
+        <repository>
+            <id>spring-releases</id>
+            <name>Spring Releases</name>
+            <url>https://repo.spring.io/libs-release</url>
+        </repository>
         <repository>
             <id>spring-snapshots</id>
             <name>Spring Snapshots</name>

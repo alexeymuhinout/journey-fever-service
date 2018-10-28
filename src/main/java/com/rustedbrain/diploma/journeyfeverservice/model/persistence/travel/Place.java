@@ -14,7 +14,7 @@ public class Place extends DatabaseEntity {
     @Column(columnDefinition = "smallint", nullable = false)
     private PlaceType placeType;
 
-    @Column(name = "name", length = 128)
+    @Column(name = "name", length = 128, nullable = false)
     private String name;
 
     @Column(name = "description", length = 1024)
@@ -29,7 +29,7 @@ public class Place extends DatabaseEntity {
     @Column(name = "latitude")
     private double latitude;
 
-    @OneToMany(mappedBy = "place", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "place", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<PlacePhoto> photos;
 
     @ManyToMany(mappedBy = "places", cascade = {CascadeType.ALL})
