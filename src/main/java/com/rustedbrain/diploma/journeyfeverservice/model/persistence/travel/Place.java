@@ -1,6 +1,7 @@
 package com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel;
 
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.DatabaseEntity;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.User;
 
 import javax.persistence.*;
 import java.util.List;
@@ -20,9 +21,6 @@ public class Place extends DatabaseEntity {
     @Column(name = "description", length = 1024)
     private String description;
 
-    @Column(name = "rating")
-    private float rating;
-
     @Column(name = "longitude")
     private double longitude;
 
@@ -38,20 +36,23 @@ public class Place extends DatabaseEntity {
     @OneToMany(mappedBy = "place", fetch = FetchType.LAZY)
     private List<Comment> comments;
 
+    @ManyToMany(mappedBy = "ignoredPlaces", fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<User> ignoredToUsers;
+
+    public List<User> getIgnoredToUsers() {
+        return ignoredToUsers;
+    }
+
+    public void setIgnoredToUsers(List<User> ignoredToUsers) {
+        this.ignoredToUsers = ignoredToUsers;
+    }
+
     public PlaceType getPlaceType() {
         return placeType;
     }
 
     public void setPlaceType(PlaceType placeType) {
         this.placeType = placeType;
-    }
-
-    public float getRating() {
-        return rating;
-    }
-
-    public void setRating(float rating) {
-        this.rating = rating;
     }
 
     public List<Travel> getTravels() {

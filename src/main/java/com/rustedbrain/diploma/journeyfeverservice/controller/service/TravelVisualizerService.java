@@ -4,9 +4,8 @@ import com.rustedbrain.diploma.journeyfeverservice.model.dto.status.GreetingServ
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.status.ServiceInfo;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.travel.LatLngBoundsDTO;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.travel.LatLngDTO;
-import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.Place;
-import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.PlacePhoto;
-import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.PlaceType;
+import com.rustedbrain.diploma.journeyfeverservice.model.dto.travel.PlaceDescriptionDTO;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.*;
 
 import java.util.List;
 
@@ -18,11 +17,17 @@ public interface TravelVisualizerService {
 
     Boolean login(String username, String password);
 
-    Place addPlace(PlaceType placeType, String name, String description, float rating, double lat, double lng, List<byte[]> photoList);
+    Place addPlace(PlaceType placeType, String name, String description, double lat, double lng, List<byte[]> photoList);
 
     List<Place> getPlaces(LatLngBoundsDTO boundsDTO);
 
-    Place getPlace(LatLngDTO latLngDTO);
+    PlaceDescriptionDTO getPlaceDescription(LatLngDTO latLngDTO, String username);
 
     List<PlacePhoto> getAllPhotos();
+
+    Comment addComment(LatLngDTO placeLatLng, String commentAddRequest, float rating, String text);
+
+    boolean placeIgnore(double latitude, double longitude, String username);
+
+    List<Travel> getUserTravels(String userName);
 }

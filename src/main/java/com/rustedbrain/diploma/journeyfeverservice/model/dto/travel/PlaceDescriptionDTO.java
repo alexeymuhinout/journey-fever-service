@@ -1,12 +1,15 @@
 package com.rustedbrain.diploma.journeyfeverservice.model.dto.travel;
 
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.HttpDTO;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.User;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.Comment;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.Place;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.PlacePhoto;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.PlaceType;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 public class PlaceDescriptionDTO extends HttpDTO {
@@ -17,22 +20,25 @@ public class PlaceDescriptionDTO extends HttpDTO {
     private float rating;
     private LatLngDTO latLngDTO;
     private List<byte[]> photoList;
+    private List<CommentDTO> commentList;
+    private boolean ignoredByUser;
 
-    public PlaceDescriptionDTO() {
-    }
 
-    public PlaceDescriptionDTO(HttpStatus status, Place place) {
-        this(place);
+    public PlaceDescriptionDTO(HttpStatus status, Place place, String username) {
+        this(place, username);
         super.setStatus(status);
     }
 
-    public PlaceDescriptionDTO(Place place) {
+    public PlaceDescriptionDTO(Place place, String username) {
         this.type = place.getPlaceType();
         this.name = place.getName();
         this.description = place.getDescription();
-        this.rating = place.getRating();
+        OptionalDouble optionalRating = place.getComments().stream().mapToDouble(Comment::getRating).average();
+        this.rating = optionalRating.isPresent() ? (float) optionalRating.getAsDouble() : 0f;
         this.latLngDTO = new LatLngDTO(place.getLatitude(), place.getLongitude());
         this.photoList = place.getPhotos().stream().map(PlacePhoto::getData).collect(Collectors.toList());
+        this.commentList = place.getComments().stream().map(CommentDTO::new).collect(Collectors.toList());
+        this.ignoredByUser = place.getIgnoredToUsers().stream().map(User::getUsername).anyMatch(username::equals);
     }
 
     public LatLngDTO getLatLngDTO() {
@@ -59,6 +65,14 @@ public class PlaceDescriptionDTO extends HttpDTO {
         this.name = name;
     }
 
+    public boolean isIgnoredByUser() {
+        return ignoredByUser;
+    }
+
+    public void setIgnoredByUser(boolean ignoredByUser) {
+        this.ignoredByUser = ignoredByUser;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -81,6 +95,14 @@ public class PlaceDescriptionDTO extends HttpDTO {
 
     public void setPhotoList(List<byte[]> photoList) {
         this.photoList = photoList;
+    }
+
+    public List<CommentDTO> getCommentList() {
+        return commentList;
+    }
+
+    public void setCommentList(List<CommentDTO> commentList) {
+        this.commentList = commentList;
     }
 
     @Override

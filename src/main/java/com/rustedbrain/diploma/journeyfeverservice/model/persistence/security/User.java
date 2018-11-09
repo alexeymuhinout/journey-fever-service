@@ -2,6 +2,7 @@ package com.rustedbrain.diploma.journeyfeverservice.model.persistence.security;
 
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.DatabaseEntity;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.Comment;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.Place;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.Travel;
 
 import javax.persistence.*;
@@ -39,6 +40,18 @@ public class User extends DatabaseEntity {
     @ManyToMany(fetch = FetchType.LAZY, cascade = javax.persistence.CascadeType.ALL)
     @JoinTable(name = "userTravel", joinColumns = @JoinColumn(name = "userId"), inverseJoinColumns = @JoinColumn(name = "travelId"))
     private List<Travel> sharedTravels;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = javax.persistence.CascadeType.ALL)
+    @JoinTable(name = "userIgnoredPlace", joinColumns = @JoinColumn(name = "userId"), inverseJoinColumns = @JoinColumn(name = "placeId"))
+    private List<Place> ignoredPlaces;
+
+    public List<Place> getIgnoredPlaces() {
+        return ignoredPlaces;
+    }
+
+    public void setIgnoredPlaces(List<Place> ignoredPlaces) {
+        this.ignoredPlaces = ignoredPlaces;
+    }
 
     public List<Travel> getSharedTravels() {
         return sharedTravels;

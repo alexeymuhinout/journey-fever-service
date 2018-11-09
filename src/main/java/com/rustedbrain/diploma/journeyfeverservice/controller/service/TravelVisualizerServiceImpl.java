@@ -1,19 +1,17 @@
 package com.rustedbrain.diploma.journeyfeverservice.controller.service;
 
-import com.rustedbrain.diploma.journeyfeverservice.controller.repository.CommentRepository;
-import com.rustedbrain.diploma.journeyfeverservice.controller.repository.PlacePhotoRepository;
-import com.rustedbrain.diploma.journeyfeverservice.controller.repository.PlaceRepository;
-import com.rustedbrain.diploma.journeyfeverservice.controller.repository.TravelRepository;
+import com.rustedbrain.diploma.journeyfeverservice.controller.repository.*;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.status.GreetingServiceInfo;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.status.ServiceInfo;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.status.Status;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.travel.LatLngBoundsDTO;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.travel.LatLngDTO;
-import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.Place;
-import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.PlacePhoto;
-import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.PlaceType;
+import com.rustedbrain.diploma.journeyfeverservice.model.dto.travel.PlaceDescriptionDTO;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.User;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,13 +24,15 @@ public class TravelVisualizerServiceImpl implements TravelVisualizerService {
     private static final String GREETING_TEMPLATE = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
 
+    private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
     private final CommentRepository commentRepository;
     private final TravelRepository travelRepository;
     private final PlacePhotoRepository placePhotoRepository;
 
     @Autowired
-    public TravelVisualizerServiceImpl(PlaceRepository placeRepository, CommentRepository commentRepository, TravelRepository travelRepository, PlacePhotoRepository placePhotoRepository) {
+    public TravelVisualizerServiceImpl(UserRepository userRepository, PlaceRepository placeRepository, CommentRepository commentRepository, TravelRepository travelRepository, PlacePhotoRepository placePhotoRepository) {
+        this.userRepository = userRepository;
         this.placeRepository = placeRepository;
         this.commentRepository = commentRepository;
         this.travelRepository = travelRepository;
@@ -55,14 +55,13 @@ public class TravelVisualizerServiceImpl implements TravelVisualizerService {
     }
 
     @Override
-    public Place addPlace(PlaceType placeType, String name, String description, float rating, double lat, double lng, List<byte[]> photoList) {
+    public Place addPlace(PlaceType placeType, String name, String description, double lat, double lng, List<byte[]> photoList) {
         Place place = new Place();
         place.setPlaceType(placeType);
         place.setName(name);
         place.setDescription(description);
-        place.setRating(rating);
         List<PlacePhoto> placePhotos = photoList.stream().map(PlacePhoto::new).collect(Collectors.toList());
-        for (PlacePhoto placePhoto : placePhotos){
+        for (PlacePhoto placePhoto : placePhotos) {
             placePhoto.setPlace(place);
         }
         place.setPhotos(placePhotos);
@@ -82,10 +81,11 @@ public class TravelVisualizerServiceImpl implements TravelVisualizerService {
     }
 
     @Override
-    public Place getPlace(LatLngDTO latLngDTO) {
+    public PlaceDescriptionDTO getPlaceDescription(LatLngDTO latLngDTO, String username) {
         Optional<Place> optionalPlace = placeRepository.findPlaceByCoordinates(latLngDTO.getLatitude(), latLngDTO.getLongitude());
         if (optionalPlace.isPresent()) {
-            return optionalPlace.get();
+            Place place = optionalPlace.get();
+            return new PlaceDescriptionDTO(place, username);
         } else {
             throw new IllegalArgumentException("Place not found by specified coordinates");
         }
@@ -94,5 +94,58 @@ public class TravelVisualizerServiceImpl implements TravelVisualizerService {
     @Override
     public List<PlacePhoto> getAllPhotos() {
         return placePhotoRepository.findAll();
+    }
+
+    @Override
+    public Comment addComment(LatLngDTO placeLatLng, String username, float rating, String text) {
+        if (!StringUtils.hasText(text)) {
+            throw new IllegalArgumentException("Comment should contain text");
+        }
+        Optional<User> optionalUser = userRepository.findByEmailOrUsername(username);
+        if (!optionalUser.isPresent()) {
+            throw new IllegalArgumentException("");
+        }
+        Optional<Place> optionalPlace = placeRepository.findPlaceByCoordinates(placeLatLng.getLatitude(), placeLatLng.getLongitude());
+        if (!optionalPlace.isPresent()) {
+            throw new IllegalArgumentException();
+        }
+
+        Comment comment = new Comment();
+        comment.setPlace(optionalPlace.get());
+        comment.setUser(optionalUser.get());
+        comment.setRating(rating);
+        comment.setText(text);
+
+        return commentRepository.save(comment);
+    }
+
+    @Override
+    public boolean placeIgnore(double latitude, double longitude, String username) {
+        Optional<User> optionalUser = userRepository.findByEmailOrUsername(username);
+        if (!optionalUser.isPresent()) {
+            throw new IllegalArgumentException("");
+        }
+        Optional<Place> optionalPlace = placeRepository.findPlaceByCoordinates(latitude, longitude);
+        if (!optionalPlace.isPresent()) {
+            throw new IllegalArgumentException();
+        }
+
+        User user = optionalUser.get();
+        Place place = optionalPlace.get();
+
+        if(user.getIgnoredPlaces().stream().anyMatch(place::equals)){
+            user.getIgnoredPlaces().remove(place);
+            place.getIgnoredToUsers().remove(user);
+        } else {
+            user.getIgnoredPlaces().add(place);
+            place.getIgnoredToUsers().add(user);
+        }
+
+        return userRepository.save(user).getIgnoredPlaces().stream().anyMatch(place::equals);
+    }
+
+    @Override
+    public List<Travel> getUserTravels(String username) {
+        return travelRepository.findByUser(username);
     }
 }

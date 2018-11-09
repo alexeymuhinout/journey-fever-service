@@ -25,16 +25,14 @@ public class PlaceMapDTO extends HttpDTO {
 
     public PlaceMapDTO(Place place) {
         this.name = place.getName();
-        this.rating = place.getRating();
         this.latitude = place.getLatitude();
         this.longitude = place.getLongitude();
         this.type = place.getPlaceType();
     }
 
-    public PlaceMapDTO(HttpStatus status, String name, float rating, double latitude, double longitude, PlaceType type) {
+    public PlaceMapDTO(HttpStatus status, String name, double latitude, double longitude, PlaceType type) {
         this.setStatus(status);
         this.name = name;
-        this.rating = rating;
         this.latitude = latitude;
         this.longitude = longitude;
         this.type = type;

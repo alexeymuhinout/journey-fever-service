@@ -15,6 +15,8 @@ public class Comment extends DatabaseEntity {
     private String text;
     @ManyToOne(fetch = FetchType.LAZY)
     private Place place;
+    @Column(name = "rating")
+    private float rating;
 
     public User getUser() {
         return user;
@@ -38,6 +40,14 @@ public class Comment extends DatabaseEntity {
 
     public void setPlace(Place place) {
         this.place = place;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
     }
 
     @Override
