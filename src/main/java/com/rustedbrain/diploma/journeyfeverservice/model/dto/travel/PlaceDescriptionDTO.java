@@ -1,18 +1,16 @@
 package com.rustedbrain.diploma.journeyfeverservice.model.dto.travel;
 
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.HttpDTO;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.User;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.Comment;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.Place;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.PlacePhoto;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.PlaceType;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
-public class PlaceDescriptionDTO extends HttpDTO {
+public class PlaceDescriptionDTO {
 
     private PlaceType type;
     private String name;
@@ -22,12 +20,6 @@ public class PlaceDescriptionDTO extends HttpDTO {
     private List<byte[]> photoList;
     private List<CommentDTO> commentList;
     private boolean ignoredByUser;
-
-
-    public PlaceDescriptionDTO(HttpStatus status, Place place, String username) {
-        this(place, username);
-        super.setStatus(status);
-    }
 
     public PlaceDescriptionDTO(Place place, String username) {
         this.type = place.getPlaceType();

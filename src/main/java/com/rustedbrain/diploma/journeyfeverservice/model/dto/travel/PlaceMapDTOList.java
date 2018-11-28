@@ -1,19 +1,15 @@
 package com.rustedbrain.diploma.journeyfeverservice.model.dto.travel;
 
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.HttpDTO;
-import org.springframework.http.HttpStatus;
-
 import java.util.List;
 
-public class PlaceMapDTOList extends HttpDTO {
+public class PlaceMapDTOList{
 
     private List<PlaceMapDTO> placeMapDTOList;
 
     public PlaceMapDTOList() {
     }
 
-    public PlaceMapDTOList(HttpStatus status, List<PlaceMapDTO> placeMapDTOList) {
-        super.setStatus(status);
+    public PlaceMapDTOList(List<PlaceMapDTO> placeMapDTOList) {
         this.placeMapDTOList = placeMapDTOList;
     }
 

@@ -1,13 +1,11 @@
 package com.rustedbrain.diploma.journeyfeverservice.model.dto.travel;
 
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.HttpDTO;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.Place;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.PlaceType;
-import org.springframework.http.HttpStatus;
 
 import java.util.Objects;
 
-public class PlaceMapDTO extends HttpDTO {
+public class PlaceMapDTO {
 
     private String name;
     private float rating;
@@ -18,11 +16,6 @@ public class PlaceMapDTO extends HttpDTO {
     public PlaceMapDTO() {
     }
 
-    public PlaceMapDTO(HttpStatus status, Place place) {
-        this(place);
-        this.setStatus(status);
-    }
-
     public PlaceMapDTO(Place place) {
         this.name = place.getName();
         this.latitude = place.getLatitude();
@@ -30,8 +23,7 @@ public class PlaceMapDTO extends HttpDTO {
         this.type = place.getPlaceType();
     }
 
-    public PlaceMapDTO(HttpStatus status, String name, double latitude, double longitude, PlaceType type) {
-        this.setStatus(status);
+    public PlaceMapDTO(String name, double latitude, double longitude, PlaceType type) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;

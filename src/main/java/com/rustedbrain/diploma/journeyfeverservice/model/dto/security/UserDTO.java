@@ -1,38 +1,32 @@
 package com.rustedbrain.diploma.journeyfeverservice.model.dto.security;
 
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.HttpDTO;
-import org.springframework.http.HttpStatus;
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.User;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-public class UserDTO extends HttpDTO {
+public class UserDTO implements Serializable {
 
     private String username;
     private List<String> roles;
-    private String token;
 
-    public UserDTO(HttpStatus status, String username, List<String> roles, String token) {
-        super.setStatus(status);
-        this.roles = roles;
-        this.token = token;
-        this.username = username;
-    }
-
-    public UserDTO(HttpStatus status) {
-        this(status, "", Collections.<String>emptyList(), "");
+    public UserDTO (User user){
+        this.username = user.getUsername();
+        this.roles = Collections.singletonList(user.getRole().name());
     }
 
     public UserDTO() {
-        this(HttpStatus.NOT_FOUND, "", Collections.<String>emptyList(), "");
     }
+
+    public UserDTO(String username, List<String> roles) {
+        this.roles = roles;
+        this.username = username;
+    }
+
 
     public List<String> getRoles() {
         return this.roles;
-    }
-
-    public String getToken() {
-        return this.token;
     }
 
     public String getUsername() {
@@ -44,7 +38,6 @@ public class UserDTO extends HttpDTO {
         return "UserDTO{" +
                 "username='" + username + '\'' +
                 ", roles=" + roles +
-                ", token='" + token + '\'' +
-                "} " + super.toString();
+                '}';
     }
 }

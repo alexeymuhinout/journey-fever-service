@@ -3,10 +3,7 @@ package com.rustedbrain.diploma.journeyfeverservice.controller;
 import com.rustedbrain.diploma.journeyfeverservice.controller.security.util.Constants;
 import com.rustedbrain.diploma.journeyfeverservice.controller.security.util.TokenUtil;
 import com.rustedbrain.diploma.journeyfeverservice.controller.service.UserService;
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.AuthenticationRequest;
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.EditProfileRequest;
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.RegistrationRequest;
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.UserDTO;
+import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.*;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.Role;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.User;
 import io.swagger.annotations.ApiOperation;
@@ -56,7 +53,7 @@ public class LoginController {
             @ApiResponse(code = 406, message = Constants.USER_PROFILE_NOT_UPDATED),
             @ApiResponse(code = 417, message = Constants.EXCEPTION_FAILED),
             @ApiResponse(code = 409, message = Constants.CONFLICT)})
-    public ResponseEntity<UserDTO> register(@RequestBody RegistrationRequest registrationRequest) {
+    public ResponseEntity<AuthUserDTO> register(@RequestBody RegistrationRequest registrationRequest) {
         try {
             String firstName = registrationRequest.getFirstName();
             String lastName = registrationRequest.getLastName();
@@ -69,14 +66,14 @@ public class LoginController {
             UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(user.getUsername());
 
             List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::toString).collect(Collectors.toList());
-            return new ResponseEntity<>(new UserDTO(HttpStatus.OK, userDetails.getUsername(), roles,
+            return new ResponseEntity<>(new AuthUserDTO(userDetails.getUsername(), roles,
                     TokenUtil.createToken(userDetails)), HttpStatus.OK);
         } catch (IllegalArgumentException ex) {
-            return new ResponseEntity<>(new UserDTO(), HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         } catch (DataIntegrityViolationException ve) {
-            return new ResponseEntity<>(new UserDTO(HttpStatus.CONFLICT), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         } catch (Exception e) {
-            return new ResponseEntity<>(new UserDTO(HttpStatus.EXPECTATION_FAILED), HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }
 
@@ -85,7 +82,7 @@ public class LoginController {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Success", response = UserDTO.class),
             @ApiResponse(code = 406, message = Constants.USER_PROFILE_NOT_UPDATED),
             @ApiResponse(code = 417, message = Constants.EXCEPTION_FAILED)})
-    public ResponseEntity<UserDTO> editProfile(@RequestBody EditProfileRequest editProfileRequest) {
+    public ResponseEntity<AuthUserDTO> editProfile(@RequestBody EditProfileRequest editProfileRequest) {
         try {
             String targetEditProfileLoginOrEmail = editProfileRequest.getTargetEditLoginOrEmail();
             String firstName = editProfileRequest.getFirstName();
@@ -99,10 +96,10 @@ public class LoginController {
             UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(editedUser.getUsername());
 
             List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::toString).collect(Collectors.toList());
-            return new ResponseEntity<>(new UserDTO(HttpStatus.OK, userDetails.getUsername(), roles,
+            return new ResponseEntity<>(new AuthUserDTO(userDetails.getUsername(), roles,
                     TokenUtil.createToken(userDetails)), HttpStatus.OK);
         } catch (IllegalArgumentException ex) {
-            return new ResponseEntity<>(new UserDTO(), HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(new AuthUserDTO(), HttpStatus.NOT_ACCEPTABLE);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
@@ -130,7 +127,7 @@ public class LoginController {
             @ApiResponse(code = 403, message = Constants.FORBIDDEN),
             @ApiResponse(code = 422, message = Constants.USER_NOT_FOUND),
             @ApiResponse(code = 417, message = Constants.EXCEPTION_FAILED)})
-    public ResponseEntity<UserDTO> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
+    public ResponseEntity<AuthUserDTO> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
         try {
             String username = authenticationRequest.getUsername();
             String password = authenticationRequest.getPassword();
@@ -141,10 +138,10 @@ public class LoginController {
             UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(username);
 
             List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::toString).collect(Collectors.toList());
-            return new ResponseEntity<>(new UserDTO(HttpStatus.OK, userDetails.getUsername(), roles,
+            return new ResponseEntity<>(new AuthUserDTO(userDetails.getUsername(), roles,
                     TokenUtil.createToken(userDetails)), HttpStatus.OK);
         } catch (BadCredentialsException bce) {
-            return new ResponseEntity<>(new UserDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }

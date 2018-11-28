@@ -2,10 +2,7 @@ package com.rustedbrain.diploma.journeyfeverservice;
 
 import com.rustedbrain.diploma.journeyfeverservice.controller.security.AuthTokenFilter;
 import com.rustedbrain.diploma.journeyfeverservice.controller.service.UserService;
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.AuthenticationRequest;
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.EditProfileRequest;
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.RegistrationRequest;
-import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.UserDTO;
+import com.rustedbrain.diploma.journeyfeverservice.model.dto.security.*;
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.status.ServiceInfo;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.Role;
 import org.junit.After;
@@ -90,11 +87,11 @@ public class LoginControllerTests {
         HttpHeaders httpHeaders = new HttpHeaders();
         AuthenticationRequest request = new AuthenticationRequest("admin", "admin");
 
-        ResponseEntity<UserDTO> auth = restTemplate.exchange(
+        ResponseEntity<AuthUserDTO> auth = restTemplate.exchange(
                 new RequestEntity<>(request, httpHeaders, HttpMethod.POST, new URI(LOGIN_URL)),
-                UserDTO.class);
+                AuthUserDTO.class);
         Assert.assertNotNull(auth.getBody());
-        Assert.assertNotEquals(HttpStatus.NOT_FOUND, auth.getBody().getStatus());
+        Assert.assertNotEquals(HttpStatus.NOT_FOUND, auth.getStatusCode());
 
         httpHeaders.add(AuthTokenFilter.AUTH_TOKEN_HEADER_NAME, auth.getBody().getToken());
         ResponseEntity<ServiceInfo> statusInfo = restTemplate.exchange(
@@ -137,11 +134,11 @@ public class LoginControllerTests {
         HttpHeaders httpHeaders = new HttpHeaders();
         AuthenticationRequest request = new AuthenticationRequest("admin", "admin");
 
-        ResponseEntity<UserDTO> auth = restTemplate.exchange(
+        ResponseEntity<AuthUserDTO> auth = restTemplate.exchange(
                 new RequestEntity<>(request, httpHeaders, HttpMethod.POST, new URI(LOGIN_URL)),
-                UserDTO.class);
+                AuthUserDTO.class);
         Assert.assertNotNull(auth.getBody());
-        Assert.assertNotEquals(HttpStatus.NOT_FOUND, auth.getBody().getStatus());
+        Assert.assertNotEquals(HttpStatus.NOT_FOUND, auth.getStatusCode());
 
         httpHeaders.add(AuthTokenFilter.AUTH_TOKEN_HEADER_NAME, auth.getBody().getToken());
 
@@ -156,11 +153,11 @@ public class LoginControllerTests {
         HttpHeaders httpHeaders = new HttpHeaders();
         AuthenticationRequest request = new AuthenticationRequest("user", "user");
 
-        ResponseEntity<UserDTO> auth = restTemplate.exchange(
+        ResponseEntity<AuthUserDTO> auth = restTemplate.exchange(
                 new RequestEntity<>(request, httpHeaders, HttpMethod.POST, new URI(LOGIN_URL)),
-                UserDTO.class);
+                AuthUserDTO.class);
         Assert.assertNotNull(auth.getBody());
-        Assert.assertNotEquals(HttpStatus.NOT_FOUND, auth.getBody().getStatus());
+        Assert.assertNotEquals(HttpStatus.NOT_FOUND, auth.getStatusCode());
 
         httpHeaders.add(AuthTokenFilter.AUTH_TOKEN_HEADER_NAME, auth.getBody().getToken());
 

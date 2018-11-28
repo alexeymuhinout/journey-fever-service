@@ -2,14 +2,14 @@ package com.rustedbrain.diploma.journeyfeverservice.model.dto.travel.request;
 
 import com.rustedbrain.diploma.journeyfeverservice.model.dto.travel.LatLngDTO;
 
-public class UserPlaceRequest extends UserRequest {
+public class NamingPlaceRequest extends NamingRequest {
 
     private LatLngDTO latLngDTO;
 
-    public UserPlaceRequest() {
+    public NamingPlaceRequest() {
     }
 
-    public UserPlaceRequest(String username, LatLngDTO latLngDTO) {
+    public NamingPlaceRequest(String username, LatLngDTO latLngDTO) {
         super(username);
         this.latLngDTO = latLngDTO;
     }
