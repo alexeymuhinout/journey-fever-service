@@ -27,23 +27,40 @@ public class User extends DatabaseEntity {
     @Column(name = "email", unique = true, length = 128)
     private String email;
 
+    @Column(name = "latitude")
+    private double lastKnownLatitude;
+
+    @Column(name = "longitude")
+    private double lastKnownLongitude;
     @Enumerated
     @Column(columnDefinition = "smallint", nullable = false)
     private Role role;
-
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Comment> comments;
-
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Travel> travels;
-
     @ManyToMany(fetch = FetchType.LAZY, cascade = javax.persistence.CascadeType.ALL)
     @JoinTable(name = "userTravel", joinColumns = @JoinColumn(name = "userId"), inverseJoinColumns = @JoinColumn(name = "travelId"))
     private List<Travel> sharedTravels;
-
     @ManyToMany(fetch = FetchType.LAZY, cascade = javax.persistence.CascadeType.ALL)
     @JoinTable(name = "userIgnoredPlace", joinColumns = @JoinColumn(name = "userId"), inverseJoinColumns = @JoinColumn(name = "placeId"))
     private List<Place> ignoredPlaces;
+
+    public double getLastKnownLatitude() {
+        return lastKnownLatitude;
+    }
+
+    public void setLastKnownLatitude(double lastKnownLatitude) {
+        this.lastKnownLatitude = lastKnownLatitude;
+    }
+
+    public double getLastKnownLongitude() {
+        return lastKnownLongitude;
+    }
+
+    public void setLastKnownLongitude(double lastKnownLongitude) {
+        this.lastKnownLongitude = lastKnownLongitude;
+    }
 
     public List<Place> getIgnoredPlaces() {
         return ignoredPlaces;

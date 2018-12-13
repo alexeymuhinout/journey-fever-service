@@ -8,6 +8,7 @@ import com.rustedbrain.diploma.journeyfeverservice.model.dto.travel.TripsMapPlac
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.User;
 import com.rustedbrain.diploma.journeyfeverservice.model.persistence.travel.*;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface TravelVisualizerService {
@@ -37,4 +38,10 @@ public interface TravelVisualizerService {
     Travel archiveTravel(String username, String travelName);
 
     List<User> getUsers();
+
+    Travel setUserTravelSharedUsers(String userName, String travelName, Collection<String> usernames);
+
+    Travel addRemoveTravelSharedUser(String username, String travelName, String sharedUsername);
+
+    User setUserCoordinates(String username, double latitude, double longitude);
 }

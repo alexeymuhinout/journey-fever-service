@@ -12,34 +12,21 @@ import java.util.stream.Collectors;
 
 public class TravelDTO implements Serializable {
 
+    private String ownerUsername;
     private String name;
     private boolean archived;
-    private List<String> sharedToUsersUsernames;
+    private List<String> sharedToUsersUsernames = new ArrayList<>();
     private List<PlaceMapDTO> places = new ArrayList<>();
 
-    public TravelDTO(String name) {
-        this(name, false);
-    }
-
-    public TravelDTO(String name, boolean archived) {
-        this(name, archived, null);
-    }
-
-    public TravelDTO(String name, List<PlaceMapDTO> places) {
-        this(name);
-        this.places = places;
-    }
-
-    public TravelDTO(String name, boolean archived, List<PlaceMapDTO> places) {
-        this.name = name;
-        this.archived = archived;
-        this.places = places;
+    public TravelDTO() {
     }
 
     public TravelDTO(Travel travel) {
+        this.ownerUsername = travel.getUser().getUsername();
         this.name = travel.getName();
         this.sharedToUsersUsernames = travel.getSharedToUsers() != null ? travel.getSharedToUsers().stream().map(User::getUsername).collect(Collectors.toList()) : new ArrayList<>();
         this.archived = travel.isArchived();
+        //this.shared = travel.getSharedToUsers() != null && travel.getSharedToUsers().stream().map(User::getUsername).anyMatch(userName::equals);
         if (travel.getPlaces() != null) {
             for (Place place : travel.getPlaces()) {
                 this.places.add(new PlaceMapDTO(place));
@@ -47,7 +34,12 @@ public class TravelDTO implements Serializable {
         }
     }
 
-    public TravelDTO() {
+    public String getOwnerUsername() {
+        return ownerUsername;
+    }
+
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
     }
 
     public List<String> getSharedToUsersUsernames() {
@@ -87,14 +79,13 @@ public class TravelDTO implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TravelDTO travelDTO = (TravelDTO) o;
-        return archived == travelDTO.archived &&
-                Objects.equals(name, travelDTO.name) &&
-                Objects.equals(places, travelDTO.places);
+        return Objects.equals(ownerUsername, travelDTO.ownerUsername) &&
+                Objects.equals(name, travelDTO.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, archived, places);
+        return Objects.hash(ownerUsername, name);
     }
 
     @Override

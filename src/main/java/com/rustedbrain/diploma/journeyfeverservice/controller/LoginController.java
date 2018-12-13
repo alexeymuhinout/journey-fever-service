@@ -141,7 +141,7 @@ public class LoginController {
             return new ResponseEntity<>(new AuthUserDTO(userDetails.getUsername(), roles,
                     TokenUtil.createToken(userDetails)), HttpStatus.OK);
         } catch (BadCredentialsException bce) {
-            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }

@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalDouble;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -153,7 +151,10 @@ public class TravelVisualizerServiceImpl implements TravelVisualizerService {
 
     @Override
     public List<Travel> getUserTravels(String username) {
-        return travelRepository.findByUser(username);
+        return travelRepository.findAll()
+                .stream()
+                .filter(travel -> travel.getUser().getUsername().equals(username) || travel.getSharedToUsers().stream().map(User::getUsername).anyMatch(username::equals))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -216,5 +217,88 @@ public class TravelVisualizerServiceImpl implements TravelVisualizerService {
     @Override
     public List<User> getUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public Travel setUserTravelSharedUsers(String username, String travelName, Collection<String> usernames) {
+        Optional<User> optionalUser = userRepository.findByEmailOrUsername(username);
+        if (!optionalUser.isPresent()) {
+            throw new IllegalArgumentException();
+        }
+        Optional<Travel> optionalTravel = optionalUser.get().getTravels().stream().filter(travel -> travel.getName().equals(travelName)).findAny();
+        if (!optionalTravel.isPresent()) {
+            throw new IllegalArgumentException();
+        }
+
+        Travel travel = optionalTravel.get();
+        List<User> users = travel.getSharedToUsers();
+
+        for (String sharedToUsername : usernames) {
+            if (users.stream().anyMatch(user -> user.getUsername().equals(sharedToUsername))) {
+                users.removeIf(user -> user.getUsername().equals(sharedToUsername));
+            } else {
+                Optional<User> optionalSharedUser = userRepository.findByEmailOrUsername(sharedToUsername);
+                if (optionalSharedUser.isPresent()) {
+                    users.add(optionalSharedUser.get());
+                    optionalSharedUser.get().getSharedTravels().add(travel);
+                }
+            }
+        }
+
+        return travelRepository.save(travel);
+    }
+
+    @Override
+    public Travel addRemoveTravelSharedUser(String username, String travelName, String sharedUsername) {
+        Optional<User> optionalUser = userRepository.findByEmailOrUsername(username);
+        if (!optionalUser.isPresent()) {
+            throw new IllegalArgumentException("");
+        }
+        Optional<Travel> optionalTravel = optionalUser.get().getTravels().stream().filter(travel -> travel.getName().equals(travelName)).findAny();
+        if (!optionalTravel.isPresent()) {
+            throw new IllegalArgumentException();
+        }
+        Optional<User> optionalSharedUser = userRepository.findByEmailOrUsername(sharedUsername);
+        if (!optionalSharedUser.isPresent()) {
+            throw new IllegalArgumentException("");
+        }
+
+        Travel travel = optionalTravel.get();
+        User sharedUser = optionalSharedUser.get();
+
+        if (travel.getSharedToUsers() == null) {
+            travel.setSharedToUsers(Collections.singletonList(sharedUser));
+            if (sharedUser.getSharedTravels() == null) {
+                sharedUser.setSharedTravels(Collections.singletonList(travel));
+            } else {
+                sharedUser.getSharedTravels().add(travel);
+            }
+        } else if (travel.getSharedToUsers().contains(sharedUser)) {
+            travel.getSharedToUsers().remove(sharedUser);
+            sharedUser.getSharedTravels().remove(travel);
+        } else {
+            travel.getSharedToUsers().add(sharedUser);
+            if (sharedUser.getSharedTravels() == null) {
+                sharedUser.setSharedTravels(Collections.singletonList(travel));
+            } else {
+                sharedUser.getSharedTravels().add(travel);
+            }
+        }
+
+        return travelRepository.save(travel);
+    }
+
+    @Override
+    public User setUserCoordinates(String username, double latitude, double longitude) {
+        Optional<User> optionalUser = userRepository.findByEmailOrUsername(username);
+        if (!optionalUser.isPresent()) {
+            throw new IllegalArgumentException("");
+        }
+
+        User user = optionalUser.get();
+        user.setLastKnownLatitude(latitude);
+        user.setLastKnownLongitude(longitude);
+
+        return userRepository.save(user);
     }
 }

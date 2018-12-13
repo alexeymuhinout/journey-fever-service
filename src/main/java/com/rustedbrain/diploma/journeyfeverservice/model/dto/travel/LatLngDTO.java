@@ -1,5 +1,7 @@
 package com.rustedbrain.diploma.journeyfeverservice.model.dto.travel;
 
+import com.rustedbrain.diploma.journeyfeverservice.model.persistence.security.User;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -14,6 +16,10 @@ public class LatLngDTO implements Serializable {
     public LatLngDTO(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public LatLngDTO(User user) {
+        this(user.getLastKnownLatitude(), user.getLastKnownLongitude());
     }
 
     public double getLatitude() {

@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,10 +98,68 @@ public class TravelVisualizerController {
             @ApiResponse(code = 400, message = Constants.BAD_REQUEST)})
     public ResponseEntity<TravelDTOList> getUserTravels(@RequestBody NamingRequest namingRequest) {
         try {
-            String userName = namingRequest.getName();
-            List<Travel> userTravels = service.getUserTravels(userName);
-            TravelDTOList travelDTOList = new TravelDTOList(userTravels.stream().map(TravelDTO::new).collect(Collectors.toList()));
+            String username = namingRequest.getName();
+            List<Travel> userTravels = service.getUserTravels(username);
+            TravelDTOList travelDTOList = new TravelDTOList(userTravels.stream().map(travel -> new TravelDTO(travel)).collect(Collectors.toList()));
             return new ResponseEntity<>(travelDTOList, HttpStatus.OK);
+        } catch (DataIntegrityViolationException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/travel/shared/set", method = {RequestMethod.POST})
+    @ApiOperation(value = "get user travels")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Success", response = PlaceMapDTO.class),
+            @ApiResponse(code = 406, message = Constants.NOT_ACCEPTABLE),
+            @ApiResponse(code = 400, message = Constants.BAD_REQUEST)})
+    public ResponseEntity<TravelDTO> setTravelSharedUsers(@RequestBody TravelSharedUsersSetRequest travelSharedUsersSetRequest) {
+        try {
+            String userName = travelSharedUsersSetRequest.getUsername();
+            String travelName = travelSharedUsersSetRequest.getName();
+            Collection<String> usernames = travelSharedUsersSetRequest.getUsernames();
+            Travel userTravel = service.setUserTravelSharedUsers(userName, travelName, usernames);
+            TravelDTO travelDTO = new TravelDTO(userTravel);
+            return new ResponseEntity<>(travelDTO, HttpStatus.OK);
+        } catch (DataIntegrityViolationException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/travel/shared/modify", method = {RequestMethod.POST})
+    @ApiOperation(value = "add or removes travels shared user")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Success", response = PlaceMapDTO.class),
+            @ApiResponse(code = 406, message = Constants.NOT_ACCEPTABLE),
+            @ApiResponse(code = 400, message = Constants.BAD_REQUEST)})
+    public ResponseEntity<TravelDTO> addRemoveTravelSharedUser(@RequestBody TravelSharedUsersSetRequest travelSharedUsersSetRequest) {
+        try {
+            String userName = travelSharedUsersSetRequest.getUsername();
+            String travelName = travelSharedUsersSetRequest.getName();
+            String sharedUserUsername = travelSharedUsersSetRequest.getUsernames().stream().findAny().get();
+            Travel userTravel = service.addRemoveTravelSharedUser(userName, travelName, sharedUserUsername);
+            TravelDTO travelDTO = new TravelDTO(userTravel);
+            return new ResponseEntity<>(travelDTO, HttpStatus.OK);
+        } catch (DataIntegrityViolationException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/travel/user/coordinates/set", method = {RequestMethod.POST})
+    @ApiOperation(value = "add travel")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Success", response = PlaceMapDTO.class),
+            @ApiResponse(code = 406, message = Constants.NOT_ACCEPTABLE),
+            @ApiResponse(code = 400, message = Constants.BAD_REQUEST)})
+    public ResponseEntity<LatLngDTO> setUserCoordinates(@RequestBody NamingPlaceRequest namingPlaceRequest) {
+        try {
+            String username = namingPlaceRequest.getName();
+            LatLngDTO latLngDTO = namingPlaceRequest.getLatLngDTO();
+            User user = service.setUserCoordinates(username, latLngDTO.getLatitude(), latLngDTO.getLongitude());
+            return new ResponseEntity<>(new LatLngDTO(user), HttpStatus.OK);
         } catch (DataIntegrityViolationException ex) {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         } catch (IllegalArgumentException ex) {
@@ -155,8 +214,8 @@ public class TravelVisualizerController {
             String travelName = travelPlaceAddRequest.getName();
             LatLngDTO latLngDTO = travelPlaceAddRequest.getLatLngDTO();
             Place place = service.addRemoveTravelPlace(username, travelName, latLngDTO.getLatitude(), latLngDTO.getLongitude());
-            PlaceDescriptionDTO travelDTO = new PlaceDescriptionDTO(place, username);
-            return new ResponseEntity<>(travelDTO, HttpStatus.OK);
+            PlaceDescriptionDTO placeDescriptionDTO = new PlaceDescriptionDTO(place, username);
+            return new ResponseEntity<>(placeDescriptionDTO, HttpStatus.OK);
         } catch (DataIntegrityViolationException ex) {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         } catch (IllegalArgumentException ex) {
